@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:applicationlistesdessouhait/model/item.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
@@ -12,7 +13,8 @@ class DatabaseClient {
       return _database;
     } else {
       // Creer cette database si c'est null
-      return create();
+      _database = await create();
+      return _database;
     }
   }
 
@@ -33,6 +35,14 @@ class DatabaseClient {
       nom TEXT NOT NULL) 
     ''');
   }
+
+  // Fuction d'ajout d'un item dans la table
+
+ Future<Item> ajoutItem(Item item)async {
+    Database maDatabase = await database;
+    item.id = await maDatabase.insert('item', item.toMap());
+    return item;
+ }
 
 
 }
