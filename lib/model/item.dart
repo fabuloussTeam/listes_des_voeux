@@ -1,3 +1,4 @@
+// A note que ce fichier fait correspondre les elent recu de la BDD
 class Item {
 
   int id;
@@ -12,7 +13,7 @@ class Item {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      'nom': this.nom, //'nom' ici c'est map['nom']
+      'nom': this.nom, //'nom' ici c'est la cléé de map['nom']
     };
     if (id != null){
       map['id'] = this.id;

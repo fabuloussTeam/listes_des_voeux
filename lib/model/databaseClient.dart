@@ -3,6 +3,7 @@ import 'package:applicationlistesdessouhait/model/item.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
+import 'item.dart';
 // Creation de la base de donne et notre table: NB: dart utilise SQL
 class DatabaseClient {
 
@@ -36,13 +37,26 @@ class DatabaseClient {
     ''');
   }
 
-  // Fuction d'ajout d'un item dans la table
+  // Fuction d'ajout d'un item dans la table:  ECRITURE DES DONNEES
 
  Future<Item> ajoutItem(Item item)async {
-    Database maDatabase = await database;
+    Database maDatabase = await database; //ici on verifi que la BDD est creer avant d'ajouter
     item.id = await maDatabase.insert('item', item.toMap());
     return item;
  }
+
+ // LECTURE DES DONNEES: recuperer tous les maps de la table
+Future<List<Item>> allItem() async {
+    Database maDatabase = await database;
+    List<Map<String, dynamic>> resultat = await maDatabase.rawQuery('SELECT * FROM item');
+    List<Item> items = [];
+    resultat.forEach((map) {
+      Item item = new Item();
+      item.fromMap(map);
+      items.add(item);
+    });
+    return items;
+}
 
 
 }
