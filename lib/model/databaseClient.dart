@@ -42,6 +42,7 @@ class DatabaseClient {
  Future<Item> ajoutItem(Item item)async {
     Database maDatabase = await database; //ici on verifi que la BDD est creer avant d'ajouter
     item.id = await maDatabase.insert('item', item.toMap());
+    print("sorti d'ajou un element: ${item.id}");
     return item;
  }
 
