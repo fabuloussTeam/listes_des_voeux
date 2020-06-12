@@ -45,6 +45,14 @@ class DatabaseClient {
     print("sorti d'ajou un element: ${item.id}");
     return item;
  }
+ 
+ // SUPRIMER UN ELEMENT DANS LA BDD:
+  Future<int> delete(int id, String table) async { //  string table:  c'est notre item
+    Database maDatabase = await database;
+    return await maDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
+  }
+ 
+ 
 
  // LECTURE DES DONNEES: recuperer tous les maps de la table
 Future<List<Item>> allItem() async {

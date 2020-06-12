@@ -49,6 +49,15 @@ class _HomeControllerState extends State<HomeController> {
             Item item = items[i];
             return new ListTile(
               title: new Text(item.nom),
+              trailing: new IconButton(
+                icon: new Icon(Icons.delete),
+                onPressed: (){
+                  DatabaseClient().delete(item.id, 'item').then((int) {
+                    print("L'int recuperer est : $int");
+                    recuperer();
+                  });
+                },
+              ),
             );
           }
       )
@@ -89,7 +98,6 @@ class _HomeControllerState extends State<HomeController> {
                   DatabaseClient().ajoutItem(item).then((i) => recuperer());
                   nouvelleListe = null;
                 }
-
                 Navigator.pop(buildContext);
               }, child: new Text("Valider", style: new TextStyle(color: Colors.blue),))
             ],
