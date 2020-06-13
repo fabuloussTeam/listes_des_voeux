@@ -35,6 +35,19 @@ class DatabaseClient {
       id INTEGER PRIMARY KEY,
       nom TEXT NOT NULL) 
     ''');
+
+    await db.execute(
+        '''
+    CREATE TABLE article (
+      id INTEGER PRIMARY KEY,
+      nom TEXT NOT NULL,
+      item INTEGER,
+      prix TEXT,
+      magasin TEXT,
+      image TEXT
+    )
+      '''
+    );
   }
 
 
@@ -51,13 +64,13 @@ class DatabaseClient {
     return items;
   }
 
- // SUPRIMER UN ELEMENT DANS LA BDD:
+  // SUPRIMER UN ELEMENT DANS LA BDD:
   Future<int> delete(int id, String table) async { //  string table:  c'est notre item
     Database maDatabase = await database;
     return await maDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
-/** MISE A JOUR D'UN ITEM */
+  /** MISE A JOUR D'UN ITEM */
 
   /*Future<int> updateItem(Item item) async {
     Database maDatabase = await database;
@@ -74,11 +87,11 @@ class DatabaseClient {
 
 
 
-/** Function UpsertItem: ca signifie update ou insert a la fois
- *  Nous avons la function ajoutItem() plus haut qui permetais d'ajouter uniquement
- * **/
+  /** Function UpsertItem: ca signifie update ou insert a la fois
+   *  Nous avons la function ajoutItem() plus haut qui permetais d'ajouter uniquement
+   * **/
 
-Future<Item> upsertItem(Item item) async {
+  Future<Item> upsertItem(Item item) async {
     Database maDatabase = await database;
     if(item.id == null){
       item.id = await maDatabase.insert('item', item.toMap());
@@ -87,7 +100,7 @@ Future<Item> upsertItem(Item item) async {
       await maDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
     }
     return item;
-}
+  }
 
 
 
