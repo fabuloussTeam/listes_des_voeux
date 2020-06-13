@@ -1,5 +1,6 @@
 import 'package:applicationlistesdessouhait/model/databaseClient.dart';
 import 'package:applicationlistesdessouhait/model/item.dart';
+import 'package:applicationlistesdessouhait/widgets/itemDetail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'donnees_vides.dart';
@@ -59,6 +60,11 @@ class _HomeControllerState extends State<HomeController> {
                     icon: new Icon(Icons.edit),
                     onPressed: (()=>ajouter(item))
                 ),
+                onTap: () {
+                  Navigator.push(context, new MaterialPageRoute(builder: (BuildContext buildContext) {
+                    return new ItemDetail(item);
+                  }));
+                },
               );
             }
         )
