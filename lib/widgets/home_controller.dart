@@ -29,42 +29,43 @@ class _HomeControllerState extends State<HomeController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: <Widget>[
-          new FlatButton(
-            onPressed: ajouter,
-            child: new Text(
-                "Ajouter",
-                style: new TextStyle(color: Colors.white, fontSize: 18.0),
+        appBar: AppBar(
+          title: Text(widget.title),
+          actions: <Widget>[
+            new FlatButton(onPressed: (() => ajouter(null)), child: new Text("Ajouter",
+              style: new TextStyle(color: Colors.white, fontSize: 18.0),
             ),
-          )
-        ],
-      ),
-      body: (items == null || items.length == 0 )
-       ? new DonneesVides()
-          : new ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, i){
-            Item item = items[i];
-            return new ListTile(
-              title: new Text(item.nom),
-              trailing: new IconButton(
-                icon: new Icon(Icons.delete),
-                onPressed: (){
-                  DatabaseClient().delete(item.id, 'item').then((int) {
-                    print("L'int recuperer est : $int");
-                    recuperer();
-                  });
-                },
-              ),
-            );
-          }
-      )
+            )
+          ],
+        ),
+        body: (items == null || items.length == 0 )
+            ? new DonneesVides()
+            : new ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, i){
+              Item item = items[i];
+              return new ListTile(
+                title: new Text(item.nom),
+                trailing: new IconButton(
+                  icon: new Icon(Icons.delete),
+                  onPressed: (){
+                    DatabaseClient().delete(item.id, 'item').then((int) {
+                      print("L'int recuperer est : $int");
+                      recuperer();
+                    });
+                  },
+                ),
+                leading: new IconButton(
+                    icon: new Icon(Icons.edit),
+                    onPressed: (()=>ajouter(item))
+                ),
+              );
+            }
+        )
     );
   }
 
-  Future<Null> ajouter() async {
+  Future<Null> ajouter(Item item) async {
     await showDialog(
         context: context,
         barrierDismissible: false,
@@ -74,7 +75,7 @@ class _HomeControllerState extends State<HomeController> {
             content: new TextField(
               decoration: new InputDecoration(
                 labelText: "Liste:",
-                hintText: "ex: mes prochains jeux videos",
+                hintText: (item == null) ? "ex: mes prochains jeux videos" : item.nom,
               ),
               onChanged: (String str){
                 nouvelleListe = str;
@@ -89,17 +90,27 @@ class _HomeControllerState extends State<HomeController> {
                   "Annuler",
                 ),
               ),
-              new FlatButton(onPressed: (){
-                // Ajouter le code pour ajouter a la base de données
-                if (nouvelleListe != null){
-                  Map<String, dynamic> map = {'nom': nouvelleListe};
-                  Item item = new Item();
-                  item.fromMap(map);
-                  DatabaseClient().ajoutItem(item).then((i) => recuperer());
-                  nouvelleListe = null;
-                }
-                Navigator.pop(buildContext);
-              }, child: new Text("Valider", style: new TextStyle(color: Colors.blue),))
+              new FlatButton(
+                  onPressed: (){
+                    // Ajouter le code pour ajouter a la base de données
+                    if (nouvelleListe != null){
+                      if(item == null){
+                        Map<String, dynamic> map = {'nom': nouvelleListe};
+                        item = new Item();
+                        item.fromMap(map);
+                        print("qd item est null : ${item.nom}");
+                     } else {
+                        item.nom = nouvelleListe;
+
+                        print("qd item est non null : ${item.nom}");
+                      }
+
+                      DatabaseClient().upsertItem(item).then((i) => recuperer());
+                      nouvelleListe = null;
+                     // print(item);
+                    }
+                    Navigator.pop(buildContext);
+                  }, child: new Text("Valider", style: new TextStyle(color: Colors.blue),))
             ],
           );
         }

@@ -37,25 +37,9 @@ class DatabaseClient {
     ''');
   }
 
-  // Fuction d'ajout d'un item dans la table:  ECRITURE DES DONNEES
 
- Future<Item> ajoutItem(Item item)async {
-    Database maDatabase = await database; //ici on verifi que la BDD est creer avant d'ajouter
-    item.id = await maDatabase.insert('item', item.toMap());
-    print("sorti d'ajou un element: ${item.id}");
-    return item;
- }
- 
- // SUPRIMER UN ELEMENT DANS LA BDD:
-  Future<int> delete(int id, String table) async { //  string table:  c'est notre item
-    Database maDatabase = await database;
-    return await maDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
-  }
- 
- 
-
- // LECTURE DES DONNEES: recuperer tous les maps de la table
-Future<List<Item>> allItem() async {
+  // LECTURE DES DONNEES: recuperer tous les maps de la table
+  Future<List<Item>> allItem() async {
     Database maDatabase = await database;
     List<Map<String, dynamic>> resultat = await maDatabase.rawQuery('SELECT * FROM item');
     List<Item> items = [];
@@ -65,7 +49,47 @@ Future<List<Item>> allItem() async {
       items.add(item);
     });
     return items;
+  }
+
+ // SUPRIMER UN ELEMENT DANS LA BDD:
+  Future<int> delete(int id, String table) async { //  string table:  c'est notre item
+    Database maDatabase = await database;
+    return await maDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
+  }
+
+/** MISE A JOUR D'UN ITEM */
+
+  /*Future<int> updateItem(Item item) async {
+    Database maDatabase = await database;
+    return await maDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+}*/
+
+  // Fuction d'ajout d'un item dans la table:  ECRITURE DES DONNEES
+  /*Future<Item> ajoutItem(Item item)async {
+    Database maDatabase = await database; //ici on verifi que la BDD est creer avant d'ajouter
+    item.id = await maDatabase.insert('item', item.toMap());
+    print("sorti d'ajou un element: ${item.id}");
+    return item;
+ }*/
+
+
+
+/** Function UpsertItem: ca signifie update ou insert a la fois
+ *  Nous avons la function ajoutItem() plus haut qui permetais d'ajouter uniquement
+ * **/
+
+Future<Item> upsertItem(Item item) async {
+    Database maDatabase = await database;
+    if(item.id == null){
+      item.id = await maDatabase.insert('item', item.toMap());
+      print("sorti de upsertItem : ${item.id} ");
+    } else {
+      await maDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
+    }
+    return item;
 }
+
+
 
 
 }
