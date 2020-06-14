@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:applicationlistesdessouhait/model/databaseClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:applicationlistesdessouhait/model/article.dart';
 
 class Ajout extends StatefulWidget {
   int id;
 
   Ajout(int id){
     this.id = id;
+    print("l'id recu est ${this.id}");
   }
 
   @override
@@ -22,7 +25,6 @@ class _AjoutState extends State<Ajout> {
   String magasin;
   String prix;
 
-
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -31,7 +33,7 @@ class _AjoutState extends State<Ajout> {
         title: new Text('Ajouter'),
         actions: <Widget>[
           new FlatButton(
-              onPressed: null,
+              onPressed: ajouter,
               child: new Text('valider', style: new TextStyle(color: Colors.white),)
           )
         ],
@@ -74,6 +76,7 @@ class _AjoutState extends State<Ajout> {
         switch (type) {
           case TypeTextField.nom:
             nom = string;
+            print(nom);
             break;
           case TypeTextField.prix:
             prix = string;
@@ -85,6 +88,37 @@ class _AjoutState extends State<Ajout> {
        }
       );
   }
+
+
+  void ajouter() {
+    if (nom != null) {
+      Map<String, dynamic> map = { 'nom': nom, 'item': widget.id};
+          print("sori de map dans ajout article: $map");
+      if (magasin != null) {
+        map['magasin'] = magasin;
+      }
+      if (prix != null) {
+        map['prix'] = prix;
+      }
+      if (image != null) {
+        map['image'] = image;
+      }
+
+      Article article = new Article();
+      article.fromMap(map);
+      DatabaseClient().upsertArticle(article).then((value) {
+        image = null;
+        nom = null;
+        magasin = null;
+        prix = null;
+        Navigator.pop(context);
+      });
+
+
+    }
+  }
+
+
 }
 
 enum TypeTextField { nom, prix, magasin }

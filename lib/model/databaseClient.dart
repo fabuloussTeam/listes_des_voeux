@@ -4,6 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'item.dart';
+import 'article.dart';
 // Creation de la base de donne et notre table: NB: dart utilise SQL
 class DatabaseClient {
 
@@ -36,18 +37,15 @@ class DatabaseClient {
       nom TEXT NOT NULL) 
     ''');
 
-    await db.execute(
-        '''
+    await db.execute('''
     CREATE TABLE article (
       id INTEGER PRIMARY KEY,
       nom TEXT NOT NULL,
       item INTEGER,
       prix TEXT,
       magasin TEXT,
-      image TEXT
-    )
-      '''
-    );
+      image TEXT )
+      ''');
   }
 
   // LECTURE DES DONNEES: recuperer tous les maps de la table
@@ -99,6 +97,19 @@ class DatabaseClient {
       await maDatabase.update('item', item.toMap(), where: 'id = ?', whereArgs: [item.id]);
     }
     return item;
+  }
+
+  /** Fonction d'ajout et de mise a jour d'un article dans la page itemDetail **/
+  Future<Article> upsertArticle(Article article) async {
+      Database maDatabase = await database;
+      if(article.id == null){
+        article.id = await maDatabase.insert('article', article.toMap());
+        print("sorti de l'ID de l'aricle ${article.id}");
+
+      } else {
+        await maDatabase.update('article', article.toMap(), where: 'id = ?', whereArgs: [article.id]);
+      }
+      return article;
   }
 
 
