@@ -18,6 +18,9 @@ class Ajout extends StatefulWidget {
 class _AjoutState extends State<Ajout> {
 
   String image;
+  String nom;
+  String magasin;
+  String prix;
 
 
   @override
@@ -51,7 +54,10 @@ class _AjoutState extends State<Ajout> {
                       new IconButton(icon: new Icon(Icons.camera_enhance), onPressed: null),
                       new IconButton(icon: new Icon(Icons.photo_library), onPressed: null)
                     ],
-                  )
+                  ),
+                  textField(TypeTextField.nom, 'Nom de l\'article'),
+                  textField(TypeTextField.prix, 'prix'),
+                  textField(TypeTextField.magasin, 'Magasin'),
                 ],
               ),
             )
@@ -60,4 +66,25 @@ class _AjoutState extends State<Ajout> {
       ),
     );
   }
+
+  TextField textField(TypeTextField type, String label){
+    return new TextField(
+      decoration: new InputDecoration(labelText: label),
+      onChanged: (String string) {
+        switch (type) {
+          case TypeTextField.nom:
+            nom = string;
+            break;
+          case TypeTextField.prix:
+            prix = string;
+            break;
+          case TypeTextField.magasin:
+            magasin = string;
+            break;
+        }
+       }
+      );
+  }
 }
+
+enum TypeTextField { nom, prix, magasin }
