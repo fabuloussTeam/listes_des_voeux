@@ -50,7 +50,6 @@ class DatabaseClient {
     );
   }
 
-
   // LECTURE DES DONNEES: recuperer tous les maps de la table
   Future<List<Item>> allItem() async {
     Database maDatabase = await database;
