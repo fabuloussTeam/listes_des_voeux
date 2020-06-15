@@ -64,6 +64,7 @@ class DatabaseClient {
   // SUPRIMER UN ELEMENT DANS LA BDD:
   Future<int> delete(int id, String table) async { //  string table:  c'est notre item
     Database maDatabase = await database;
+    await maDatabase.delete('article', where: 'item = ?', whereArgs: [id]);
     return await maDatabase.delete(table, where: 'id = ?', whereArgs: [id]);
   }
 
@@ -105,11 +106,24 @@ class DatabaseClient {
       if(article.id == null){
         article.id = await maDatabase.insert('article', article.toMap());
         print("sorti de l'ID de l'aricle ${article.id}");
-
       } else {
         await maDatabase.update('article', article.toMap(), where: 'id = ?', whereArgs: [article.id]);
       }
       return article;
+  }
+
+  /** recuperation de tout les articles de chaque veux **/
+  Future<List<Article>> allArticles(int item) async {
+    Database maDatabase = await database;
+    List<Map<String, dynamic>> resultat = await maDatabase.query('article', where: 'item = ?', whereArgs: [item]);
+    List<Article> articles = [];
+    resultat.forEach((map) {
+      Article article = new Article();
+      article.fromMap(map);
+      print("Sorti de element article dans la map: $map");
+      articles.add(article);
+    });
+    return articles;
   }
 
 
