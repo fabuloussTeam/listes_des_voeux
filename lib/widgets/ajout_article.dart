@@ -4,6 +4,7 @@ import 'package:applicationlistesdessouhait/model/databaseClient.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:applicationlistesdessouhait/model/article.dart';
+import 'package:image_picker/image_picker.dart';
 
 class Ajout extends StatefulWidget {
   int id;
@@ -53,8 +54,8 @@ class _AjoutState extends State<Ajout> {
                   new Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: <Widget>[
-                      new IconButton(icon: new Icon(Icons.camera_enhance), onPressed: null),
-                      new IconButton(icon: new Icon(Icons.photo_library), onPressed: null)
+                      new IconButton(icon: new Icon(Icons.camera_enhance), onPressed: (()=> getImage(ImageSource.camera))),
+                      new IconButton(icon: new Icon(Icons.photo_library), onPressed: (()=>getImage(ImageSource.gallery)))
                     ],
                   ),
                   textField(TypeTextField.nom, 'Nom de l\'article'),
@@ -113,11 +114,16 @@ class _AjoutState extends State<Ajout> {
         prix = null;
         Navigator.pop(context);
       });
-
-
     }
   }
 
+  Future getImage(ImageSource source) async {
+    var nouvelleImage = await ImagePicker().getImage(source: source);
+    setState(() {
+      image = nouvelleImage.path;
+    });
+    
+  }
 
 }
 
