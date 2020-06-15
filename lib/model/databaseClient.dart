@@ -126,6 +126,14 @@ class DatabaseClient {
     return articles;
   }
 
+  /** Supprimer un article **/
+  Future<int> deleteArticle(int id, String table) async {
+    //  string table:  c'est notre item
+    Database maDatabase = await database;
+    //await maDatabase.delete('article', where: 'item = ?', whereArgs: [id]);
+    return await maDatabase.delete('article', where: 'id = ?', whereArgs: [id]);
+  }
+
 
 
 

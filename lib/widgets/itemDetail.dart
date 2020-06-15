@@ -21,6 +21,8 @@ class ItemDetail extends StatefulWidget {
 class _ItemDetailState extends State<ItemDetail> {
 
   List<Article> articles;
+  bool deleteArticle = false;
+
 
   @override
   void initState() {
@@ -30,6 +32,15 @@ class _ItemDetailState extends State<ItemDetail> {
       print("la liste des article de ${widget.item.id} ");
       setState(() {
         articles = liste;
+      });
+    });
+  }
+
+  // Recuperation de tous les elements de la BDD 'databaseClient'
+  void recuperer(){
+    DatabaseClient().allArticles(widget.item.id).then((articles) {
+      setState(() {
+        this.articles = articles;
       });
     });
   }
@@ -63,22 +74,53 @@ class _ItemDetailState extends State<ItemDetail> {
     ? new DonneesVides()
         : new GridView.builder(
     itemCount: articles.length,
-    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 1),
       itemBuilder: (context, i) {
       Article article = articles[i];
         return new SingleChildScrollView(
-           padding: EdgeInsets.only(top: 10.0, left: 5.0, bottom: 5.0, right: 5.0),
-          child: new Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-             children: <Widget>[
-              new Text(article.nom),
-               (article.image == null)
-               ? new Image.asset("images/avatar-1577909_1280.png", width: width / 2.8, height: height / 4.5,)
-                   : new Image.file(new File(article.image)),
-               new Text((article.image == null) ? 'Aucun prix renseigné' : "Prix: ${article.prix}"),
-               new Text((article.magasin == null) ? 'Aucun magasin renseigné' : "Magasin: ${article.magasin}")
-             ],
-           ),
+         //  padding: EdgeInsets.only(top: 10.0, left: 5.0, bottom: 5.0, right: 5.0),
+          child: new InkWell(
+            onLongPress: (){
+              setState(() {
+                 deleteArticle = !deleteArticle;
+                 print(deleteArticle);
+              });
+            },
+            child:  new Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                (deleteArticle == true)
+                    ? new Row(
+
+                      children: <Widget>[
+                        new Padding(padding: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 10, left: 10)),
+                        new IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed:(){
+                            DatabaseClient().deleteArticle(article.id, 'article').then((int) {
+                              print("L'int recuperer est : $int");
+                              recuperer();
+                            });
+                          }
+                          ),
+                        new Text("Supprimer", style: new TextStyle(color: Colors.red))
+                      ],
+                    )
+                    : new Padding(padding: EdgeInsets.only(top: 0.0)),
+                new Text(article.nom),
+                new Container(
+                  width: width / 1.5,
+                  height: height / 2,
+                  child:  (article.image == null)
+                      ? new Image.asset("images/avatar-1577909_1280.png")
+                      : new Image.file(new File(article.image)),
+                ),
+
+                new Text((article.image == null) ? 'Aucun prix renseigné' : "Prix: ${article.prix}"),
+                new Text((article.magasin == null) ? 'Aucun magasin renseigné' : "Magasin: ${article.magasin}")
+              ],
+            ),
+          )
         );
       },
     )
